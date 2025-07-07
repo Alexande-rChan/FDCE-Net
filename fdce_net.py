@@ -81,7 +81,7 @@ class f_net(nn.Module):
             x = self.Decoder[i](x)
         return x
 
-    def forward(self, img_low, pre_enhancement, color_shortcuts):#todo: 这里需要改成不需要img_low
+    def forward(self, img_low, pre_enhancement, color_shortcuts):
         x = torch.cat([img_low, pre_enhancement], 1)
         x = self.conv_first(x)
         x, shortcuts = self.encoder(x)
