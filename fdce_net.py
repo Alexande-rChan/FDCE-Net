@@ -12,11 +12,11 @@ class fdce_net(nn.Module):
         self.f_net = f_net()
 
     def forward(self, img_low):
-        gray = self.fs_net(img_low)
+        pre_enhancement = self.fs_net(img_low)
         color_hist, color_feature = self.dc_net(img_low)
-        img_enhance = self.f_net(img_low, gray, color_feature)
+        img_enhance = self.f_net(img_low, pre_enhancement, color_feature)
 
-        return gray, color_hist, img_enhance
+        return pre_enhancement, color_hist, img_enhance
 
 
 class f_net(nn.Module):
@@ -81,8 +81,8 @@ class f_net(nn.Module):
             x = self.Decoder[i](x)
         return x
 
-    def forward(self, img_low, gray, color_shortcuts):#todo: 这里需要改成不需要img_low
-        x = torch.cat([img_low, gray], 1)
+    def forward(self, img_low, pre_enhancement, color_shortcuts):#todo: 这里需要改成不需要img_low
+        x = torch.cat([img_low, pre_enhancement], 1)
         x = self.conv_first(x)
         x, shortcuts = self.encoder(x)
         x = self.middle(x)
@@ -209,8 +209,8 @@ class fs_net(nn.Module):
         x = self.middle(x)
         x = self.decoder(x, shortcuts)
         x = self.conv_last(x)
-        gray = (torch.tanh(x) + 1) / 2
-        return gray
+        pre_enhancement = (torch.tanh(x) + 1) / 2
+        return pre_enhancement
 
 
 class BasicConv(nn.Module):
